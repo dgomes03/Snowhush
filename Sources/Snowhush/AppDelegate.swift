@@ -128,6 +128,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, SPUSta
             entry.tag = snowfall.rawValue
             return entry
         }
+        menu.addItem(.sectionHeader(title: "Speed"))
+        menu.addItem(makeSpeedItem())
         menu.addItem(.separator())
         accumulateItem = add("Accumulate", #selector(toggleAccumulate), to: menu)
         meltItem = add("Melt Snow", #selector(toggleMeltSnow), to: menu)
@@ -143,6 +145,41 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, SPUSta
 
         item.menu = menu
         return item
+    }
+
+    /// A slider from a tortoise to a hare that sets how fast the flakes fall.
+    private func makeSpeedItem() -> NSMenuItem {
+        let slider = NSSlider(
+            value: Double(Preferences.fallSpeed),
+            minValue: Preferences.fallSpeedRange.lowerBound,
+            maxValue: Preferences.fallSpeedRange.upperBound,
+            target: self,
+            action: #selector(changeFallSpeed(_:))
+        )
+        slider.isContinuous = true
+        slider.controlSize = .small
+
+        func icon(_ name: String) -> NSImageView {
+            let view = NSImageView(image: NSImage(systemSymbolName: name, accessibilityDescription: nil) ?? NSImage())
+            view.contentTintColor = .secondaryLabelColor
+            view.symbolConfiguration = .init(pointSize: 11, weight: .regular)
+            return view
+        }
+        let row = NSStackView(views: [icon("tortoise"), slider, icon("hare")])
+        row.spacing = 6
+        row.edgeInsets = NSEdgeInsets(top: 2, left: 14, bottom: 4, right: 14)
+        row.frame = NSRect(x: 0, y: 0, width: 220, height: 26)
+        slider.widthAnchor.constraint(greaterThanOrEqualToConstant: 140).isActive = true
+
+        let item = NSMenuItem()
+        item.view = row
+        return item
+    }
+
+    @objc private func changeFallSpeed(_ sender: NSSlider) {
+        let speed = Float(sender.doubleValue)
+        Preferences.fallSpeed = speed
+        for snow in screens { snow.simulation.fallSpeed = speed }
     }
 
     @discardableResult

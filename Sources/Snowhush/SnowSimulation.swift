@@ -118,6 +118,8 @@ final class SnowSimulation {
     }
     var thaws = false
     var accumulates = true
+    /// Multiplies how fast the flakes fall; they ease into a new speed rather than jumping to it.
+    var fallSpeed: Float = 1
     /// Keeps the snowfall from starting until a scattered window's snow first reaches the bottom of the screen.
     var snowfallHeld = false {
         didSet { updateTarget() }
@@ -814,7 +816,7 @@ final class SnowSimulation {
         while i >= 0 {
             var flake = flakes[i]
             flake.velocity.x += (wind * (0.35 + 0.65 * flake.depth) - flake.velocity.x) * follow
-            flake.velocity.y += (-flake.fallSpeed - flake.velocity.y) * settle
+            flake.velocity.y += (-flake.fallSpeed * fallSpeed - flake.velocity.y) * settle
 
             if wakeActive {
                 let distanceSquared = simd_length_squared(flake.position - wakeCenter)

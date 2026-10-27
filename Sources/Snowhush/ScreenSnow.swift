@@ -21,6 +21,7 @@ final class ScreenSnow {
         )
         simulation.thaws = Preferences.meltSnow
         simulation.accumulates = Preferences.accumulate
+        simulation.fallSpeed = Preferences.fallSpeed
         let renderer: Renderer
         do {
             renderer = try Renderer(device: device, pixelFormat: .bgra8Unorm, simulation: simulation)

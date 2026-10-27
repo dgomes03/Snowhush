@@ -33,6 +33,9 @@ enum Preferences {
     private static let snowOnWindowsKey = "snowOnWindows"
     private static let welcomedKey = "welcomed"
     private static let showInScreenshotsKey = "showInScreenshots"
+    private static let fallSpeedKey = "fallSpeed"
+
+    static let fallSpeedRange: ClosedRange<Double> = 0.25...3
 
     static func registerDefaults() {
         let calm = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
@@ -43,12 +46,19 @@ enum Preferences {
             accumulateKey: true,
             snowOnWindowsKey: true,
             showInScreenshotsKey: false,
+            fallSpeedKey: 1.0,
         ])
     }
 
     static var snowfall: Snowfall {
         get { Snowfall(rawValue: defaults.integer(forKey: snowfallKey)) ?? .steady }
         set { defaults.set(newValue.rawValue, forKey: snowfallKey) }
+    }
+
+    /// Multiplies how fast the flakes fall.
+    static var fallSpeed: Float {
+        get { Float(min(max(defaults.double(forKey: fallSpeedKey), fallSpeedRange.lowerBound), fallSpeedRange.upperBound)) }
+        set { defaults.set(Double(newValue), forKey: fallSpeedKey) }
     }
 
     static var snowOnWindows: Bool {
