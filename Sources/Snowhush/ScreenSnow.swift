@@ -42,7 +42,7 @@ final class ScreenSnow {
             return SIMD2(Float(mouse.x - window.frame.minX), Float(mouse.y - window.frame.minY))
         }
         renderer.windowSurfaces = { [unowned self] now in
-            snowOnWindows() && !window.behindWindows ? tracker.poll(now: now, eager: NSEvent.pressedMouseButtons != 0) : nil
+            snowOnWindows() ? tracker.poll(now: now, eager: NSEvent.pressedMouseButtons != 0) : nil
         }
         renderer.sceneLight = { [unowned self] now in
             light.update(screen: self.screen, now: now)
